@@ -10,3 +10,11 @@ def test_browser():
     browser.get("https://www.google.com")
     browser.quit()
 
+
+    """
+    This function tests the browser functionality using Selenium WebDriver.
+    It opens a Chrome browser, maximizes the window, navigates to Google's homepage,
+    and then closes the browser.
+    """
+    
+    
