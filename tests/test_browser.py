@@ -15,13 +15,16 @@ DRIVER_PATH = 'D:\\webdriver\\chromedriver.exe'
 def root_url():
     return f'file:///{BASE_DIR / "store-template" / "index.html"}'
 
-def test_find_by_xpath_selectors(browser, root_url):
+def test_find_by_xpath_selectors(browser: WebDriver, root_url: str):
     browser.get(root_url)
     browser.maximize_window()
     browser.find_element(By.ID, 'start-purchase-link').click()
     time.sleep(2)
+    
     el1 = browser.find_element(By.XPATH, '/html/body/div/div/div[2]/div[2]/div[4]/div/div[2]/button')
+    
     browser.find_element(By.ID, 'navbarDropdown').click()
+    
     el2 = browser.find_element(By.XPATH, '//*[@id="navbarResponsive"]/ul/li[3]/ul/li[1]/a')
     
     assert el1.text == 'Отправить в корзину'
@@ -32,7 +35,7 @@ def test_find_by_xpath_selectors(browser, root_url):
 
 
 
-def test_find_by_ccs_selectors(browser, root_url):
+def test_find_by_ccs_selectors(browser: WebDriver, root_url: str):
     browser.get(root_url)
     browser.maximize_window()
     browser.find_element(By.ID, 'start-purchase-link').click()
