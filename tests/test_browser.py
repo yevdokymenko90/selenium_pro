@@ -1,5 +1,6 @@
 import time
 import pytest
+from bs4 import BeautifulSoup
 from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -37,6 +38,24 @@ def headless_chrome():
     browser.quit()
     
     
+def test_bs(browser: WebDriver, root_url: str):
+    browser.get(root_url)
+    browser.maximize_window()
+    browser.find_element(By.ID, 'start-purchase-link').click()
+    
+    bs = BeautifulSoup(browser.page_source, 'html.parser')
+    rows = bs.find_all('div', attrs={'class': 'card-body'})
+    
+    products = []
+    for row in rows:
+        title = row.find('h4').text
+        products.append(title)
+        
+    with open('products.txt', 'w') as file:
+        file.write('\n'.join(products))
+
+
+
 
 
 def test_interactions(browser: WebDriver, root_url: str):
@@ -88,7 +107,7 @@ def test_find_by_xpath_selectors(browser: WebDriver, root_url: str):
 
 
 
-def test_find_by_css_selectors(headless_chrome, root_url):
+def test_find_by_css_selectors(headless_chrome: WebDriver, root_url: str):
     headless_chrome.get(root_url)
     headless_chrome.maximize_window()
     
@@ -170,7 +189,7 @@ def _switch_to_another_handler(browser, original_page_handler):
             browser.switch_to.window(window_handle)
             break
 
-def test_interaction_with_tabs_or_windows(browser, root_url):
+def test_interaction_with_tabs_or_windows(browser: WebDriver, root_url: str):
     browser.get(root_url)
     browser.maximize_window()
     
