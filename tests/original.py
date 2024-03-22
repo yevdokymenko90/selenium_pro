@@ -7,6 +7,8 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from config.settings import BASE_DIR
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+import time
 
 # Замените этот путь на путь к вашему исполняемому файлу chromedriver
 DRIVER_PATH = 'D:\\webdriver\\chromedriver.exe'
@@ -14,6 +16,70 @@ DRIVER_PATH = 'D:\\webdriver\\chromedriver.exe'
 @pytest.fixture(scope="function")
 def root_url():
     return f'file:///{BASE_DIR / "store-template" / "index.html"}'
+
+def test_interactions(browser: WebDriver, root_url: str):
+    browser.get(root_url)
+    browser.maximize_window()
+    browser.find_element(By.ID, 'navbarDropdown').click()
+    time.sleep(2)
+    browser.find_element(By.LINK_TEXT, 'Профиль').click()
+    time.sleep(2)
+    browser.find_element(By.LINK_TEXT, 'Оформить заказ').click()
+    time.sleep(2)
+    
+    first_name = browser.find_element(By.ID, 'firstName')
+    first_name.send_keys('John')
+    time.sleep(2)
+    
+    last_name = browser.find_element(By.ID, 'lastName')
+    last_name.send_keys('Doe')
+    time.sleep(2)
+    
+    assert first_name.get_attribute('value') == 'John'
+    assert last_name.get_attribute('value') == 'Doe'
+    
+    remember_data = browser.find_element(By.ID, 'rememberData')
+    remember_data.click()
+    time.sleep(2)
+    assert remember_data.is_selected()
+    
+    remember_data.click()
+    assert remember_data.is_selected() is False
+    
+
+
+def test_find_by_xpath_selectors(browser: WebDriver, root_url: str):
+    browser.get(root_url)
+    browser.maximize_window()
+    browser.find_element(By.ID, 'start-purchase-link').click()
+    time.sleep(2)
+    
+    el1 = browser.find_element(By.XPATH, '/html/body/div/div/div[2]/div[2]/div[4]/div/div[2]/button')
+    
+    browser.find_element(By.ID, 'navbarDropdown').click()
+    
+    el2 = browser.find_element(By.XPATH, '//*[@id="navbarResponsive"]/ul/li[3]/ul/li[1]/a')
+    
+    assert el1.text == 'Отправить в корзину'
+    assert el2.text == 'Профиль'
+
+
+
+
+def test_find_by_ccs_selectors(browser: WebDriver, root_url: str):
+    browser.get(root_url)
+    browser.maximize_window()
+    browser.find_element(By.ID, 'start-purchase-link').click()
+    time.sleep(2)
+    
+    el1 = browser.find_element(By.CSS_SELECTOR, 'a[aria-disabled="true"]')
+    el2 = browser.find_element(By.CSS_SELECTOR, '#navbarDropdown')
+    
+    el_list = [el1, el2]
+    
+    assert all(el is not None for el in el_list)
+   
+
 
 @pytest.fixture(scope="function")
 def browser():
@@ -65,4 +131,5 @@ def test_titles_are_correct(browser: WebDriver, root_url: str):
     
     product_title = browser.find_element(By.ID, 'product-title')
     assert product_title.text == 'Store', "Product title does not match expected"
+    
     
