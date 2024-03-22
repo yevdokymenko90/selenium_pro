@@ -30,7 +30,7 @@ def _switch_to_another_handler(browser, original_page_handler):
 
 
 
-def interaction_with_tabs_or_windows(browser: WebDriver, root_url: str):
+def interaction_with_tabs_or_windows(browser, root_url):
     browser.get(root_url)
     browser.maximize_window()
     
