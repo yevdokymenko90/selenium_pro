@@ -20,6 +20,49 @@ DRIVER_PATH = 'D:\\webdriver\\chromedriver.exe'
 def root_url():
     return f'file:///{BASE_DIR / "store-template" / "index.html"}'
 
+
+
+def _switch_to_another_handler(browser, original_page_handler):
+    for window_handler in browser.window_handles:
+        if window_handler != original_page_handler:
+            browser.switch_to.window(window_handler)
+            break
+
+
+
+def interaction_with_tabs_or_windows(browser: WebDriver, root_url: str):
+    browser.get(root_url)
+    browser.maximize_window()
+    
+    original_page_handler = browser.current_window_handle
+    
+    login_page_link = browser.find_element(By.LINK_TEXT, 'Войти')
+    login_page_link.click()
+    
+    _switch_to_another_handler(browser, original_page_handler)
+    
+    login_title = browser.find_element(By.TAG_NAME, 'title').text
+    assert login_title == 'Store - Авторизация'
+    
+    browser.close()
+    browser.switch_to.window(original_page_handler)
+    
+    catalog_page = browser.find_element(By.LINK_TEXT, 'Каталог')
+    catalog_page.click()
+    
+    _switch_to_another_handler(browser, original_page_handler)
+    
+    catalog_title = browser.find_element(By.TAG_NAME, 'title').text
+    assert catalog_title == 'Store - Каталог'
+
+    browser.close()
+    browser.switch_to.window(original_page_handler) 
+    
+    main_title = browser.find_element(By.TAG_NAME, 'title').text
+    assert main_title == 'Store'
+    
+
+
 def test_interactions(browser: WebDriver, root_url: str):
     browser.get(root_url)
     browser.maximize_window()
@@ -112,6 +155,7 @@ def test_add_to_cart_and_remove(browser: WebDriver, root_url: str):
 
     assert card_title == added_item_title
     WebDriverWait(browser, timeout=5).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="trash"]/i')))
+    
     try:
         browser.find_element(By.ID, 'trash').click()
     except NoSuchElementException:
