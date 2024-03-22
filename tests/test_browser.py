@@ -15,6 +15,38 @@ DRIVER_PATH = 'D:\\webdriver\\chromedriver.exe'
 def root_url():
     return f'file:///{BASE_DIR / "store-template" / "index.html"}'
 
+def test_find_by_xpath_selectors(browser, root_url):
+    browser.get(root_url)
+    browser.maximize_window()
+    browser.find_element(By.ID, 'start-purchase-link').click()
+    time.sleep(2)
+    el1 = browser.find_element(By.XPATH, '/html/body/div/div/div[2]/div[2]/div[4]/div/div[2]/button')
+    browser.find_element(By.ID, 'navbarDropdown').click()
+    el2 = browser.find_element(By.XPATH, '//*[@id="navbarResponsive"]/ul/li[3]/ul/li[1]/a')
+    
+    assert el1.text == 'Отправить в корзину'
+    assert el2.text == 'Профиль'
+
+
+
+
+
+
+def test_find_by_ccs_selectors(browser, root_url):
+    browser.get(root_url)
+    browser.maximize_window()
+    browser.find_element(By.ID, 'start-purchase-link').click()
+    time.sleep(2)
+    
+    el1 = browser.find_element(By.CSS_SELECTOR, 'a[aria-disabled="true"]')
+    el2 = browser.find_element(By.CSS_SELECTOR, '#navbarDropdown')
+    
+    el_list = [el1, el2]
+    
+    assert all(el is not None for el in el_list)
+   
+
+
 @pytest.fixture(scope="function")
 def browser():
     # Указываем путь к chromedriver напрямую через Service
@@ -65,4 +97,5 @@ def test_titles_are_correct(browser: WebDriver, root_url: str):
     
     product_title = browser.find_element(By.ID, 'product-title')
     assert product_title.text == 'Store', "Product title does not match expected"
+    
     
