@@ -8,7 +8,10 @@ from selenium.webdriver.common.by import By
 from config.settings import BASE_DIR
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-import time
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+
 
 # Замените этот путь на путь к вашему исполняемому файлу chromedriver
 DRIVER_PATH = 'D:\\webdriver\\chromedriver.exe'
@@ -21,11 +24,11 @@ def test_interactions(browser: WebDriver, root_url: str):
     browser.get(root_url)
     browser.maximize_window()
     browser.find_element(By.ID, 'navbarDropdown').click()
-    time.sleep(2)
+    
     browser.find_element(By.LINK_TEXT, 'Профиль').click()
-    time.sleep(2)
+    
     browser.find_element(By.LINK_TEXT, 'Оформить заказ').click()
-    time.sleep(2)
+    
     
     first_name = browser.find_element(By.ID, 'firstName')
     first_name.send_keys('John')
@@ -108,7 +111,7 @@ def test_add_to_cart_and_remove(browser: WebDriver, root_url: str):
     added_item_title = browser.find_element(By.CLASS_NAME, 'card-title').text
 
     assert card_title == added_item_title
-    time.sleep(2)
+    WebDriverWait(browser, timeout=5).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="trash"]/i')))
     try:
         browser.find_element(By.ID, 'trash').click()
     except NoSuchElementException:
