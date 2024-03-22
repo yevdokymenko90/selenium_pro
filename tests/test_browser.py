@@ -22,46 +22,6 @@ def root_url():
 
 
 
-def _switch_to_another_handler(browser, original_page_handler):
-    for window_handler in browser.window_handles:
-        if window_handler != original_page_handler:
-            browser.switch_to.window(window_handler)
-            break
-
-
-
-def interaction_with_tabs_or_windows(browser, root_url):
-    browser.get(root_url)
-    browser.maximize_window()
-    
-    original_page_handler = browser.current_window_handle
-    
-    login_page_link = browser.find_element(By.LINK_TEXT, 'Войти')
-    login_page_link.click()
-    
-    _switch_to_another_handler(browser, original_page_handler)
-    
-    login_title = browser.find_element(By.TAG_NAME, 'title').text
-    assert login_title == 'Store - Авторизация'
-    
-    browser.close()
-    browser.switch_to.window(original_page_handler)
-    
-    catalog_page = browser.find_element(By.LINK_TEXT, 'Каталог')
-    catalog_page.click()
-    
-    _switch_to_another_handler(browser, original_page_handler)
-    
-    catalog_title = browser.find_element(By.TAG_NAME, 'title').text
-    assert catalog_title == 'Store - Каталог'
-
-    browser.close()
-    browser.switch_to.window(original_page_handler) 
-    
-    main_title = browser.find_element(By.TAG_NAME, 'title').text
-    assert main_title == 'Store'
-    
-
 
 def test_interactions(browser: WebDriver, root_url: str):
     browser.get(root_url)
@@ -180,3 +140,42 @@ def test_titles_are_correct(browser: WebDriver, root_url: str):
     assert product_title.text == 'Store', "Product title does not match expected"
     
     
+    
+def _switch_to_another_handler(browser, original_page_handler):
+    for window_handler in browser.window_handles:
+        if window_handler != original_page_handler:
+            browser.switch_to.window(window_handler)
+            break
+
+
+
+def test_interaction_with_tabs_or_windows(browser, root_url):
+    browser.get(root_url)
+    browser.maximize_window()
+    
+    original_page_handler = browser.current_window_handle
+    
+    login_page_link = browser.find_element(By.LINK_TEXT, 'Войти')
+    login_page_link.click()
+    
+    _switch_to_another_handler(browser, original_page_handler)
+    
+    login_title = browser.find_element(By.TAG_NAME, 'title').text
+    assert login_title == 'Store - Авторизация'
+    
+    browser.close()
+    browser.switch_to.window(original_page_handler)
+    
+    catalog_page = browser.find_element(By.LINK_TEXT, 'Каталог')
+    catalog_page.click()
+    
+    _switch_to_another_handler(browser, original_page_handler)
+    
+    catalog_title = browser.find_element(By.TAG_NAME, 'title').text
+    assert catalog_title == 'Store - Каталог'
+
+    browser.close()
+    browser.switch_to.window(original_page_handler) 
+    
+    main_title = browser.find_element(By.TAG_NAME, 'title').text
+    assert main_title == 'Store'
